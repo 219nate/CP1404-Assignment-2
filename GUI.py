@@ -1,16 +1,14 @@
+__author__ = 'Nathan Johnston'
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.properties import StringProperty
 from kivy.properties import ListProperty
+from kivy.core.window import Window
 
-__author__ = 'Nathan Johnston'
-
-STATES = {'QLD': "Queensland", 'NSW': "New South Wales", 'VIC': "Victoria", 'WA': "Western Australia",
-          'TAS': "Tasmania", 'NT': "Northern Territory", 'SA': "South Australia", 'ACT': "Canberra",
-          'NQ': "Cowboys!", 'NZ': "New Zealand"}
+Window.size = (300, 450)
 
 class Spinner(App):
-    CurrentTripLocation = 'India'
+    TripCountryList = ["Belgium", "San Fransisco", "Austraia"]
 
     def build(self):
         self.title = "Foreign Exchange Calculator"

@@ -1,6 +1,7 @@
 __author__ = 'Nathan Johnston'
 from kivy.app import App
 from kivy.lang import Builder
+from kivy.config import Config
 from kivy.properties import StringProperty
 from kivy.properties import ListProperty
 from kivy.core.window import Window
@@ -9,7 +10,7 @@ from web_utility import *
 from trip import *
 import time
 
-Window.size = (300, 450)
+Window.size = (350, 700)
 
 class App(App):
     def __init__(self,**kwargs):
@@ -17,12 +18,17 @@ class App(App):
         self.tripCountryList = ["Belgium", "San Fransisco", "Australia"]
 
     def build(self):
+        Config.set('graphics', 'resizable', '0')
         self.title = "Foreign Exchange Calculator"
         self.root = Builder.load_file('GUI.kv')
         return self.root
 
     def updateConversionRate(self):
-        self.targetCountry = self.root.ids.TripCountryNamesSpinner.text
+        if self.root.ids.TripCountryNamesSpinner.text == "":
+            self.targetCountry = "Australia" #!!! MAKE IT SET THE TARGET AREA TO THE CURRENT TRIP DATE PLACE
+            self.root.ids.TripCountryNamesSpinner.text = self.targetCountry
+        else:
+            self.targetCountry = self.root.ids.TripCountryNamesSpinner.text
         self.homeCountry = self.root.ids.HomeCountryStaticText.text
         self.homeToCountryRate = convert(1,self.homeCountry,self.targetCountry)
         self.countryToHomeRate = convert(1,self.targetCountry,self.homeCountry)

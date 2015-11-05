@@ -12,12 +12,6 @@ import time
 
 Window.size = (350, 700)
 
-file = open("config.txt", encoding="utf-8")
-for line in file:
-            words = [word for word in line.strip().split(',')]
-            trip=Details()
-            trip.add(words[0],words[1],words[2])
-
 class App(App):
     def __init__(self,**kwargs):
         super(App,self).__init__(**kwargs)

@@ -35,6 +35,7 @@ class App(App):
         self.root.ids.StatusMessage.text = "Updated at " + time.strftime("%H:%M:%S")
 
     def onSpinnerSelection(self):
+        self.textBoxStatus(0)
         self.updateConversionRate()
 
     def textBoxStatus(self, status=1):

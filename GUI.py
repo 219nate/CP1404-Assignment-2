@@ -12,10 +12,15 @@ import time
 
 Window.size = (350, 700)
 
+file = open("config.txt", encoding="utf-8")
+for line in file:
+            words = [word for word in line.strip().split(',')]
+            trip=Details()
+            trip.add(words[0],words[1],words[2])
+
 class App(App):
     def __init__(self,**kwargs):
         super(App,self).__init__(**kwargs)
-        self.tripCountryList = ["Belgium", "San Fransisco", "Australia", "Japan"]
         self.countryDictionary = get_complete_details()
         self.currentDate = time.strftime("%Y/%m/%d")
 
@@ -23,15 +28,44 @@ class App(App):
         Config.set('graphics', 'resizable', '0')
         self.title = "Foreign Exchange Calculator"
         self.root = Builder.load_file('GUI.kv')
+        self.tripCountryList=[]v
         return self.root
+
+    def getTripDetails(self):
+        trip=Details()
+        tempCountryName=[]
+        self.lineNumber==0
+        file = open('config.txt', encoding='utf-8')
+        for line in file:
+            self.lineNumber+=1
+            words = [word for word in line.strip().split(',')]
+            try:
+                self.countryDictionary[words[0]]
+            except:
+                self.root.ids.StatusMessage.text="Invalid Country"
+                return
+            if self.lineNumber>1:
+                try:
+                    trip.add((words[0]),(words[1],(words[2])))
+                    tempCountryName.append(words[0])
+                except:
+                    self.root.ids.StatusMessage.text="Invalid Date"
+                    return
+            else:
+                self.homeCountry=words[0]
+        self.tripCountryList=tempCountryName
+        self.root.ids.TripCountryNamesSpinner.values=self.tripCountryList
+        self.currentCountry=trip.current_country(time.strftime("%Y/%m/%d"))
+        self.root.ids.HomeCountryStaticText.text=self.homeCountry
+
 
     def updateConversionRate(self):
         if self.root.ids.TripCountryNamesSpinner.text == "":
-            self.targetCountry = "Australia" #!!! MAKE IT SET THE TARGET AREA TO THE CURRENT TRIP DATE PLACE
+            self.targetCountry = self.countryDictionary[self.currentCountry][1]
             self.root.ids.TripCountryNamesSpinner.text = self.targetCountry
         else:
-            self.targetCountry = self.root.ids.TripCountryNamesSpinner.text
-        self.homeCountry = self.root.ids.HomeCountryStaticText.text
+            self.targetCountry = self.countryDictionary[self.root.ids.TripCountryNamesSpinner.text][1]
+        self.homeCountry = self.countryDictionary[self.root.ids.HomeCountryStaticText.text][1]
         self.homeToCountryRate = convert(1,self.homeCountry,self.targetCountry)
         self.countryToHomeRate = convert(1,self.targetCountry,self.homeCountry)
         self.root.ids.StatusMessage.text = "Updated at " + time.strftime("%H:%M:%S")
@@ -73,3 +107,4 @@ class App(App):
 
 App().run()
 
+print(trip)

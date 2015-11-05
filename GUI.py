@@ -15,7 +15,9 @@ Window.size = (350, 700)
 class App(App):
     def __init__(self,**kwargs):
         super(App,self).__init__(**kwargs)
-        self.tripCountryList = ["Belgium", "San Fransisco", "Australia"]
+        self.tripCountryList = ["Belgium", "San Fransisco", "Australia", "Japan"]
+        self.countryDictionary = get_complete_details()
+        self.currentDate = time.strftime("%Y/%m/%d")
 
     def build(self):
         Config.set('graphics', 'resizable', '0')
@@ -37,6 +39,24 @@ class App(App):
     def onSpinnerSelection(self):
         self.textBoxStatus(0)
         self.updateConversionRate()
+
+    def homeCountryAmountEntered(self):
+        self.homeCountryAmount = self.root.ids.HomeCountryAmount.text
+        try:
+            self.homeCountryAmount = float(self.homeCountryAmount)
+        except:
+            self.root.ids.StatusMessage.text = "Invalid Amount"
+        self.convertedAmount = self.homeCountryAmount*self.homeToCountryRate
+        self.root.ids.CurrentCountryAmount.text = str(self.convertedAmount)
+
+    def currentCountryAmountEntered(self):
+        self.currentCountryAmount = self.root.ids.CurrentCountryAmount.text
+        try:
+            self.currentCountryAmount = float(self.currentCountryAmount)
+        except:
+            self.root.ids.StatusMessage.text = "Invalid Amount"
+        self.convertedAmount = self.currentCountryAmount*self.countryToHomeRate
+        self.root.ids.HomeCountryAmount.text = str(self.convertedAmount)
 
     def textBoxStatus(self, status=1):
         if status == 1:

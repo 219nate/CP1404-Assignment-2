@@ -28,13 +28,14 @@ class App(App):
         Config.set('graphics', 'resizable', '0')
         self.title = "Foreign Exchange Calculator"
         self.root = Builder.load_file('GUI.kv')
-        self.tripCountryList=[]v
+        self.tripCountryList=[]
         return self.root
+
 
     def getTripDetails(self):
         trip=Details()
         tempCountryName=[]
-        self.lineNumber==0
+        self.lineNumber=0
         file = open('config.txt', encoding='utf-8')
         for line in file:
             self.lineNumber+=1
@@ -46,7 +47,7 @@ class App(App):
                 return
             if self.lineNumber>1:
                 try:
-                    trip.add((words[0]),(words[1],(words[2])))
+                    trip.add((words[0]),(words[1]),(words[2]))
                     tempCountryName.append(words[0])
                 except:
                     self.root.ids.StatusMessage.text="Invalid Date"
@@ -60,9 +61,10 @@ class App(App):
 
 
     def updateConversionRate(self):
+        self.getTripDetails()
         if self.root.ids.TripCountryNamesSpinner.text == "":
             self.targetCountry = self.countryDictionary[self.currentCountry][1]
-            self.root.ids.TripCountryNamesSpinner.text = self.targetCountry
+            self.root.ids.TripCountryNamesSpinner.text = self.currentCountry
         else:
             self.targetCountry = self.countryDictionary[self.root.ids.TripCountryNamesSpinner.text][1]
         self.homeCountry = self.countryDictionary[self.root.ids.HomeCountryStaticText.text][1]
@@ -78,18 +80,18 @@ class App(App):
         self.homeCountryAmount = self.root.ids.HomeCountryAmount.text
         try:
             self.homeCountryAmount = float(self.homeCountryAmount)
+            self.convertedAmount = self.homeCountryAmount*self.homeToCountryRate
         except:
             self.root.ids.StatusMessage.text = "Invalid Amount"
-        self.convertedAmount = self.homeCountryAmount*self.homeToCountryRate
         self.root.ids.CurrentCountryAmount.text = str(self.convertedAmount)
 
     def currentCountryAmountEntered(self):
         self.currentCountryAmount = self.root.ids.CurrentCountryAmount.text
         try:
             self.currentCountryAmount = float(self.currentCountryAmount)
+            self.convertedAmount = self.currentCountryAmount*self.countryToHomeRate
         except:
             self.root.ids.StatusMessage.text = "Invalid Amount"
-        self.convertedAmount = self.currentCountryAmount*self.countryToHomeRate
         self.root.ids.HomeCountryAmount.text = str(self.convertedAmount)
 
     def textBoxStatus(self, status=1):

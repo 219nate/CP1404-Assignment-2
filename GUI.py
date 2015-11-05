@@ -7,6 +7,7 @@ from kivy.core.window import Window
 from currency import *
 from web_utility import *
 from trip import *
+import time
 
 Window.size = (300, 450)
 
@@ -21,11 +22,14 @@ class App(App):
         return self.root
 
     def updateConversionRate(self):
+        self.targetCountry = self.root.ids.TripCountryNamesSpinner.text
+        self.homeCountry = self.root.ids.HomeCountryStaticText.text
+        self.homeToCountryRate = convert(1,self.homeCountry,self.targetCountry)
+        self.countryToHomeRate = convert(1,self.targetCountry,self.homeCountry)
+        self.root.ids.StatusMessage.text = "Updated at " + time.strftime("%H:%M:%S")
 
     def onSpinnerSelection(self):
         self.updateConversionRate()
-        currentSpinner = self.root.ids.TripCountryNames.text
-
 
     def textBoxStatus(self, status=1):
         if status == 1:
@@ -36,8 +40,8 @@ class App(App):
             self.root.ids.CurrentCountryAmount.disabled = False
 
     def onPress(self):
-        print('buttonpress')
         self.textBoxStatus(0)
+        self.updateConversionRate()
 
 
 App().run()

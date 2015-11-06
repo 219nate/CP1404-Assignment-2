@@ -18,14 +18,6 @@ class App(App):
         self.countryDictionary = get_complete_details()
         self.currentDate = time.strftime("%Y/%m/%d")
 
-    def build(self):
-        Config.set('graphics', 'resizable', '0')
-        self.title = "Foreign Exchange Calculator"
-        self.root = Builder.load_file('GUI.kv')
-        self.tripCountryList=[]
-        return self.root
-
-
     def getTripDetails(self):
         trip=Details()
         tempCountryName=[]
@@ -53,17 +45,28 @@ class App(App):
         self.currentCountry=trip.current_country(time.strftime("%Y/%m/%d"))
         self.root.ids.HomeCountryStaticText.text=self.homeCountry
 
+    def build(self):
+        Config.set('graphics', 'resizable', '0')
+        self.title = "Foreign Exchange Calculator"
+        self.root = Builder.load_file('GUI.kv')
+        self.getTripDetails()
+        return self.root
 
     def updateConversionRate(self):
-        self.getTripDetails()
+        self.targetCountry = self.root.ids.TripCountryNamesSpinner.text
         if self.root.ids.TripCountryNamesSpinner.text == "":
-            self.targetCountry = self.countryDictionary[self.currentCountry][1]
+            self.targetCountryCode = self.countryDictionary[self.currentCountry][1]
             self.root.ids.TripCountryNamesSpinner.text = self.currentCountry
         else:
-            self.targetCountry = self.countryDictionary[self.root.ids.TripCountryNamesSpinner.text][1]
-        self.homeCountry = self.countryDictionary[self.root.ids.HomeCountryStaticText.text][1]
-        self.homeToCountryRate = convert(1,self.homeCountry,self.targetCountry)
-        self.countryToHomeRate = convert(1,self.targetCountry,self.homeCountry)
+            self.targetCountryCode = self.countryDictionary[self.root.ids.TripCountryNamesSpinner.text][1]
+        self.homeCountryCode = self.countryDictionary[self.root.ids.HomeCountryStaticText.text][1]
+        if self.countryDictionary[self.currentCountry][2]==self.countryDictionary[self.targetCountry][2]:
+            self.homeToCountryRate=1
+            self.countryToHomeRate=1
+            self.root.ids.StatusMessage.text = "Updated at " + time.strftime("%H:%M:%S")
+            return
+        self.homeToCountryRate = convert(1,self.homeCountryCode,self.targetCountryCode)
+        self.countryToHomeRate = convert(1,self.targetCountryCode,self.homeCountryCode)
         self.root.ids.StatusMessage.text = "Updated at " + time.strftime("%H:%M:%S")
 
     def onSpinnerSelection(self):
@@ -75,18 +78,31 @@ class App(App):
         try:
             self.homeCountryAmount = float(self.homeCountryAmount)
             self.convertedAmount = self.homeCountryAmount*self.homeToCountryRate
+            self.root.ids.CurrentCountryAmount.text = "{0:.2f}".format(self.convertedAmount)
+            self.homeCountryCode=self.countryDictionary[self.homeCountry][1]
+            self.homeCurrencySymbol=(self.countryDictionary[self.homeCountry][2]).encode("utf-8")
+            self.targetCountrySymbol=(self.countryDictionary[self.targetCountry][2]).encode("utf-8")
+            self.conversionDirection="{} ({}) to {} ({})".format(self.homeCountryCode,self.homeCurrencySymbol,self.targetCountryCode,self.targetCountrySymbol)
+            self.root.ids.StatusMessage.text=self.conversionDirection
         except:
             self.root.ids.StatusMessage.text = "Invalid Amount"
-        self.root.ids.CurrentCountryAmount.text = str(self.convertedAmount)
+
+
 
     def currentCountryAmountEntered(self):
         self.currentCountryAmount = self.root.ids.CurrentCountryAmount.text
         try:
             self.currentCountryAmount = float(self.currentCountryAmount)
             self.convertedAmount = self.currentCountryAmount*self.countryToHomeRate
+            self.root.ids.HomeCountryAmount.text = "{0:.2f}".format(self.convertedAmount)
+            self.homeCountryCode=self.countryDictionary[self.homeCountry][1]
+            self.homeCurrencySymbol=(self.countryDictionary[self.homeCountry][2]).encode("utf-8")
+            self.targetCountrySymbol=(self.countryDictionary[self.targetCountry][2]).encode("utf-8")
+            self.conversionDirection="{} ({}) to {} ({})".format(self.targetCountryCode,self.targetCountrySymbol,self.homeCountryCode,self.homeCurrencySymbol)
+            self.root.ids.StatusMessage.text=self.conversionDirection
         except:
             self.root.ids.StatusMessage.text = "Invalid Amount"
-        self.root.ids.HomeCountryAmount.text = str(self.convertedAmount)
+
 
     def textBoxStatus(self, status=1):
         if status == 1:
@@ -102,5 +118,3 @@ class App(App):
 
 
 App().run()
-
-print(trip)
